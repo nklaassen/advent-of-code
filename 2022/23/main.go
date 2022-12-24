@@ -23,16 +23,16 @@ func main() {
 			}
 		}
 	}
+	fmt.Println(s)
 	for i := 0; i < 10; i++ {
 		s.round()
 	}
-	fmt.Println(s)
 	fmt.Println("Part 1:", s.countEmpty())
 	round := 11
 	for s.round() {
-		fmt.Println("movement in round", round)
 		round++
 	}
+	fmt.Println(s)
 	fmt.Println("Part 2:", round)
 }
 
@@ -50,26 +50,22 @@ func newState() *State {
 }
 
 func (s *State) round() bool {
-	// map of proposed destinations to pairs of elves proposing to move there
+	// map of proposed destinations to positions of elves proposing to move there
 	proposals := make(map[Pair][]Pair)
 	for elf := range s.elves {
-		hasNeighbour := false
-		var proposal Pair
+		var possibleProposals []Pair
 	directionLoop:
 		for _, d := range s.directions {
 			for _, c := range d.check {
 				if s.elves[add(elf, c)] {
-					hasNeighbour = true
 					continue directionLoop
 				}
 			}
-			if proposal != (Pair{}) {
-				continue
-			}
-			proposal = add(elf, d.dest)
+			possibleProposals = append(possibleProposals, add(elf, d.dest))
 		}
-		if hasNeighbour && proposal != (Pair{}) {
-			proposals[proposal] = append(proposals[proposal], elf)
+		if len(possibleProposals) > 0 && len(possibleProposals) < 4 {
+			p := possibleProposals[0]
+			proposals[p] = append(proposals[p], elf)
 		}
 	}
 
@@ -130,11 +126,12 @@ func (s *State) String() string {
 }
 
 type Move struct {
+	dir   string
 	check []Pair
 	dest  Pair
 }
 
-func newMove(cardinal Pair) Move {
+func newMove(cardinal Pair, dir string) Move {
 	return Move{
 		check: []Pair{
 			add(cardinal, Pair{-cardinal.y, -cardinal.x}),
@@ -142,14 +139,15 @@ func newMove(cardinal Pair) Move {
 			add(cardinal, Pair{cardinal.y, cardinal.x}),
 		},
 		dest: cardinal,
+		dir:  dir,
 	}
 }
 
 var (
-	N = newMove(Pair{0, -1})
-	S = newMove(Pair{0, 1})
-	W = newMove(Pair{-1, 0})
-	E = newMove(Pair{1, 0})
+	N = newMove(Pair{0, -1}, "N")
+	S = newMove(Pair{0, 1}, "S")
+	W = newMove(Pair{-1, 0}, "W")
+	E = newMove(Pair{1, 0}, "E")
 )
 
 type Pair struct {
