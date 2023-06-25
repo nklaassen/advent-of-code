@@ -18,7 +18,7 @@ macro_rules! mods {
     };
 }
 
-mods!(day1, day2, day3, day4, day5, day6, day7, day8, day9, day10, day11, day12, day13);
+mods!(day1, day2, day3, day4, day5, day6, day7, day8, day9, day10, day11, day12, day13, day14);
 
 type EmptyResult = Result<(), Box<dyn Error>>;
 type Func = fn() -> EmptyResult;
